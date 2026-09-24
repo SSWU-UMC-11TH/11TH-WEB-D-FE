@@ -1,19 +1,29 @@
+import "./header.css";
+
+
 function Header() {
     return (
-        <header>
-            <div>
-                <strong>UMCine</strong>
+        <header className="header">
+            <div className="header-left">
+                <div className="logo">
+                    <img src="/icons/movie.svg" alt="" />
+                    <strong>UMCine</strong>
+                </div>
 
-                <nav>
+                <nav className="nav">
                     <span>영화</span>
                     <span>검색</span>
                     <span>내 정보</span>
                 </nav>
             </div>
 
-            <div>
-                <button>검색</button>
-                <button>로그인</button>
+            <div className="header-right">
+                <button className="search-button" type="button" aria-label="검색">
+                    <img src="/icons/search.svg" alt="" />
+                </button>
+                <button className="login-button" type="button">
+                    로그인
+                </button>
             </div>
         </header>
     );

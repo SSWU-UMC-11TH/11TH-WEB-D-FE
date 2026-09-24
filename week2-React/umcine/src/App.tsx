@@ -1,3 +1,5 @@
+import "./App.css";
+
 import { useState } from "react";
 import Header from "./components/header";
 import MovieGrid from "./components/movie-grid";
@@ -16,8 +18,8 @@ function App() {
     <>
       <Header />
 
-      <main>
-        <h1>영화 목록</h1>
+      <main className="movie-page">
+        <h1 className="movie-page-title">영화 목록</h1>
         <MovieGrid movies={movies}
           onToggleBookmark={handleToggleBookmark}  />
       </main>

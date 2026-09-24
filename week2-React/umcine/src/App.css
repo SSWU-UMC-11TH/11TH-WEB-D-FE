@@ -182,3 +182,14 @@
     border-right-color: var(--border);
   }
 }
+
+.movie-page {
+  padding: 32px 64px;
+}
+
+.movie-page-title {
+  margin: 0 0 24px;
+  font-size: 32px;
+  font-weight: 700;
+  text-align: left;
+}

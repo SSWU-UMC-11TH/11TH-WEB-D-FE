@@ -1,3 +1,5 @@
+import "./movie-card.css";
+
 import type { Movie } from "../types/movie";
 
 interface MovieCardProps {
@@ -7,16 +9,31 @@ interface MovieCardProps {
 
 function MovieCard({ movie, onToggleBookmark }: MovieCardProps) {
     return (
-        <article>
-            <img src={movie.posterPath} alt={movie.title} />
+        <article className="movie-card">
+            <div className="poster-wrapper">
+                <img 
+                    className="movie-poster"
+                    src={movie.posterPath} 
+                    alt={movie.title} 
+                />
+                <button className="bookmark-button"
+                type="button"
+                onClick={() => onToggleBookmark(movie.id)}
+                aria-label="북마크"
+                >
+                    <img 
+                    src={
+                        movie.isBookmarked 
+                        ? "/icons/bookmark.svg"
+                        : "/icons/bookmark-outline.svg"
+                    }   
+                    alt=""
+                />
+                </button>
+            </div>
 
-            <button type="button"
-            onClick={() => onToggleBookmark(movie.id)}>
-                {movie.isBookmarked ? "북마크됨" : "북마크"}
-            </button>
-
-            <h2>{movie.title}</h2>
-            <p>{movie.releaseDate}</p>
+            <h2 className="movie-title">{movie.title}</h2>
+            <p className="movie-release-date">{movie.releaseDate}</p>
         </article>
     );
 }
