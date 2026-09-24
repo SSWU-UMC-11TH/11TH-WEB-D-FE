@@ -195,5 +195,5 @@
   font-weight: 700;
   line-height: 44px;
   letter-spacing: -1.71px;
-  color: #17191e;
+  color: var(--text-h);
 }
