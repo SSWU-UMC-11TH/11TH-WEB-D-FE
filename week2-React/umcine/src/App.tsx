@@ -18,7 +18,8 @@ function App() {
 
       <main>
         <h1>영화 목록</h1>
-        <MovieGrid movies={movies} />
+        <MovieGrid movies={movies}
+          onToggleBookmark={handleToggleBookmark}  />
       </main>
     </>
   );
