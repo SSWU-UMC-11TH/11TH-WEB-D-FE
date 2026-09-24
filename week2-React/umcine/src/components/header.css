@@ -2,7 +2,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 64px;
+    padding: 20px 0 20px 64px;
     background-color: white;
 }
 
@@ -10,6 +10,18 @@
     display: flex;
     align-items: center;
     gap: 40px;
+}
+
+.nav span {
+    font-family: Pretendard, sans-serif;
+    font-size: 14px;
+    line-height: 100%;
+    color: #17191e
+}
+
+.nav .active {
+    font-weight: 700;
+    text-decoration: underline;
 }
 
 .nav {
@@ -27,24 +39,37 @@
 .logo {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
-.logo img {
-    width: 24px;
-    height: 24px;
+.logo-icon {
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid #17191e;
+    border-radius: 8px;
+    box-sizing: border-box;
 }
 
 .logo strong {
+    font-family: Pretendard, sans-serif;
     font-size: 20px;
+    font-weight: 900;
+    line-height: 100%;
+    letter-spacing: -0.7px;
+    color: #17191e;
 }
 
 .search-button {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     padding: 0;
     background-color: white;
     border: 1px solid #e5e7eb;
@@ -52,8 +77,8 @@
 }
 
 .search-button img {
-    width: 20px;
-    height: 20px;
+    width: 17.49px;
+    height: 17.49px;
 }
 
 .login-button {

@@ -1,11 +1,11 @@
 .movie-card {
-    width: 100%;
+    width: 241.6px;
 }
 
 .movie-poster {
     display: block;
-    width: 100%;
-    aspect-ratio: 3 / 4;
+    width: 241.6px;
+    height: 274px;
     object-fit: cover;
     border-radius: 8px;
 }
@@ -13,7 +13,7 @@
 .movie-title {
     margin: 8px 0 4px;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 800;
     text-align: left;
 }
 
@@ -30,23 +30,33 @@
 
 .bookmark-button {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: 12px;
+    right: 12px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
     padding: 0;
 
-    border: none;
-    background: transparent;
+    border-radius: 8px;
     cursor: pointer;
 }
 
+.bookmark-button.not-bookmarked {
+    background-color: rgba(17, 24, 39, 0.8);
+    border: 1px solid white;
+}
+
+.bookmark-button.bookmarked {
+    background-color: #2563eb;
+    border: none;
+}
+
 .bookmark-button img {
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
+    filter: brightness(0) invert(1);
 }

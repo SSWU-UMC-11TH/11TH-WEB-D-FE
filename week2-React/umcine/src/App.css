@@ -188,8 +188,12 @@
 }
 
 .movie-page-title {
-  margin: 0 0 24px;
-  font-size: 32px;
-  font-weight: 700;
+  margin: 0 0 20px 0;
   text-align: left;
+  font-family: Pretendard, sans-serif;
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 44px;
+  letter-spacing: -1.71px;
+  color: #17191e;
 }

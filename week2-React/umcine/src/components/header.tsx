@@ -6,12 +6,15 @@ function Header() {
         <header className="header">
             <div className="header-left">
                 <div className="logo">
-                    <img src="/icons/movie.svg" alt="" />
+                    <span className="logo-icon">
+                        <img src="/icons/movie.svg" alt="" />
+                    </span>
+                    
                     <strong>UMCine</strong>
                 </div>
 
                 <nav className="nav">
-                    <span>영화</span>
+                    <span className="active">영화</span>
                     <span>검색</span>
                     <span>내 정보</span>
                 </nav>
