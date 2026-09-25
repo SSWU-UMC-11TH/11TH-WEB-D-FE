@@ -1,0 +1,28 @@
+.pagination{
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.page_button{
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    color: #969da8;
+    background-color: transparent;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.page_active{
+    color: #ffffff;
+    background-color: #2563eb;
+}
