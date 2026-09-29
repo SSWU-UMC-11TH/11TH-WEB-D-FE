@@ -1,0 +1,22 @@
+import "../header.css";
+
+export default function Header() {
+  return (
+    <header className="header">
+      <div className="logo">
+        <div className="logo-icon">
+          <img src="/icons/movie.svg" alt="" />
+        </div>
+        <h1>UMCine</h1>
+      </div>
+
+      <p>영화</p>
+      <p>검색</p>
+      <p>내 정보</p>
+      <button className="search-btn" aria-label="검색">
+        <img src="/icons/search.svg" alt="" />
+      </button>
+      <button className="login">로그인</button>
+    </header>
+  );
+}
