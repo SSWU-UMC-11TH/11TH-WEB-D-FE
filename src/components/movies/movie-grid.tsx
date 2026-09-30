@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { movies as initialMovies } from "../../data/movies";
 import MovieCard from "./movie-card";
-import "./movie-grid.css";
 
 export default function MovieGrid() {
   const [movies, setMovies] = useState(initialMovies);
@@ -18,14 +17,10 @@ export default function MovieGrid() {
 
   return (
     <div>
-      <ul className="movie-grid">
+      <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {movies.map((movie) => (
           <li key={movie.id}>
-            <MovieCard
-              key={movie.id}
-              movie={movie}
-              onToggleBookmark={handleToggleBookmark}
-            />
+            <MovieCard movie={movie} onToggleBookmark={handleToggleBookmark} />
           </li>
         ))}
       </ul>
