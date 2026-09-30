@@ -1,7 +1,7 @@
 //import { createContext, useContext, useState } from "react";
-import Header from "./header.tsx";
+import Header from "./layout/header.tsx";
 import "../App.css";
-import MovieGrid from "./movie-grid.tsx";
+import MovieGrid from "./movies/movie-grid.tsx";
 //import MovieGrid from "./movie-grid.tsx"
 
 /* type StudyMode = "focus" | "break";

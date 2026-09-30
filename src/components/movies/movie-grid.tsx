@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { movies as initialMovies } from "../data/movies";
+import { movies as initialMovies } from "../../data/movies";
 import MovieCard from "./movie-card";
-import "../movie-grid.css";
+import "./movie-grid.css";
 
 export default function MovieGrid() {
   const [movies, setMovies] = useState(initialMovies);

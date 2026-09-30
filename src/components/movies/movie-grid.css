@@ -1,6 +1,7 @@
 .movie-grid {
   display: grid;
   grid-template-columns: repeat(5, 241px);
+  
   gap: 24px;                          
   list-style: none;                   
   padding: 0;                         
