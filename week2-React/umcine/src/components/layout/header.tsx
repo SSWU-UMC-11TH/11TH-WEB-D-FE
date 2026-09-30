@@ -2,8 +2,8 @@ import { Link } from "@tanstack/react-router";
 
 function Header() {
     return (
-        <header className="flex items-center justify-between bg-white py-5 pl-16">
-            <div className="flex items-center gap-10">
+        <header className="flex flex-col gap-3 bg-white px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-0 sm:py-5 sm:pl-16">
+            <div className="flex items-center gap-5 sm:gap-10">
                 <div className="flex items-center gap-2.5">
                     <span className="box-border flex h-8 w-8 items-center justify-center rounded-lg border-2 border-[#17191e]">
                         <img src="/icons/movie.svg" alt="" />
@@ -14,7 +14,7 @@ function Header() {
                     </strong>
                 </div>
 
-                <nav className="flex items-center gap-8">
+                <nav className="flex items-center gap-4 sm:gap-8">
                     <Link
                         to="/"
                         className="font-[Pretendard,sans-serif] text-[14px] leading-none text-[#17191e] [&.active]:font-bold [&.active]:underline"
@@ -36,9 +36,9 @@ function Header() {
             </div>
 
             <div className="flex items-center gap-3">
-                <button
+                <Link
+                    to="/search"
                     className="flex h-[42px] w-[42px] items-center justify-center rounded-lg border border-[#e5e7eb] bg-white p-0"
-                    type="button"
                     aria-label="검색"
                 >
                     <img
@@ -46,7 +46,7 @@ function Header() {
                         src="/icons/search.svg"
                         alt=""
                     />
-                </button>
+                </Link>
 
                 <button
                     className="rounded-[6px] border-0 bg-[#2563eb] px-4 py-2.5 font-semibold text-white"
