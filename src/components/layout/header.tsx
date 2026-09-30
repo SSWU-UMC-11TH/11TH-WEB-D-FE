@@ -1,4 +1,5 @@
 import "./header.css";
+import { Link } from "@tanstack/react-router";
 
 export default function Header() {
   return (
@@ -10,8 +11,8 @@ export default function Header() {
         <h1>UMCine</h1>
       </div>
 
-      <p>영화</p>
-      <p>검색</p>
+      <Link to="/">영화</Link>
+      <Link to="/search">검색</Link>
       <p>내 정보</p>
       <button className="search-btn" aria-label="검색">
         <img src="/icons/search.svg" alt="" />

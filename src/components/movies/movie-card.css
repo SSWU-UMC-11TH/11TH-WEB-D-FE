@@ -9,7 +9,13 @@
   height: 274px;
 }
 
-.poster > img {
+.poster > a {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.poster > a > img {
   width: 100%;
   height: 100%;
   display: block;     
