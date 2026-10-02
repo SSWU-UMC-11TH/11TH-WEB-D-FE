@@ -1,7 +1,9 @@
+type MemberRole = "leader" | "member";
+
 type MemberInformation = {
   id: number;
   name: string;
-  role: "leader" | "member";
+  role: MemberRole;
   githubId?: string;
 };
 
