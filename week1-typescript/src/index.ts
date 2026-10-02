@@ -1,11 +1,11 @@
-type memberInformation = {
+type MemberInformation = {
   id: number;
   name: string;
   role: "leader" | "member";
   githubId?: string;
 };
 
-const members: memberInformation[] = [
+const members: MemberInformation[] = [
   {
     id: 1,
     name: "허은빈",
@@ -19,7 +19,7 @@ const members: memberInformation[] = [
   },
 ];
 
-function findMember(id: number): memberInformation | undefined {
+function findMember(id: number): MemberInformation | undefined {
   return members.find((member) => member.id === id);
 }
 
