@@ -3,9 +3,14 @@ import { useBookmarkStore } from "../stores/bookmark-store";
 interface BookmarkButtonProps {
   movieId: number;
   className?: string;
+  label?: string;
 }
 
-export function BookmarkButton({ movieId, className }: BookmarkButtonProps) {
+export function BookmarkButton({
+  movieId,
+  className,
+  label,
+}: BookmarkButtonProps) {
   const isBookmarked = useBookmarkStore((state) =>
     state.bookmarkedMovieIds.includes(movieId),
   );
@@ -26,6 +31,7 @@ export function BookmarkButton({ movieId, className }: BookmarkButtonProps) {
         }
         alt=""
       />
+      {label}
     </button>
   );
 }

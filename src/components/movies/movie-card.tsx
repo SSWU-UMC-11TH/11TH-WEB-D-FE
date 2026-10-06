@@ -28,7 +28,6 @@ export default function MovieCard({ movie }: MovieCardProps) {
           movieId={movie.id}
           className={cn(
             "absolute right-2 top-2 flex cursor-pointer rounded-full p-2 text-white",
-            // 내부에서 isBookmarked 상태를 이미 계산하므로, 필요시 className만 전달
           )}
         />
       </div>
