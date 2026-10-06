@@ -4,10 +4,15 @@ import { cn } from "../../utils/cn";
 
 interface MovieCardProps {
   movie: Movie;
+  isBookmarked: boolean;
   onToggleBookmark: (movieId: number) => void;
 }
 
-export default function MovieCard({ movie, onToggleBookmark }: MovieCardProps) {
+export default function MovieCard({
+  movie,
+  isBookmarked,
+  onToggleBookmark,
+}: MovieCardProps) {
   return (
     <div className="h-79.5 w-full">
       <div className="relative h-68.5 w-60.25">
@@ -25,16 +30,16 @@ export default function MovieCard({ movie, onToggleBookmark }: MovieCardProps) {
         <button
           className={cn(
             "absolute right-2 top-2 flex cursor-pointer rounded-full p-2 text-white",
-            movie.isBookmarked ? "bg-blue-600" : "bg-black/60",
+            isBookmarked ? "bg-blue-600" : "bg-black/60",
           )}
-          aria-label={movie.isBookmarked ? "북마크 해제" : "북마크"}
-          aria-pressed={movie.isBookmarked}
+          aria-label={isBookmarked ? "북마크 해제" : "북마크"}
+          aria-pressed={isBookmarked}
           onClick={() => onToggleBookmark(movie.id)}
         >
           <img
             className="size-6"
             src={
-              movie.isBookmarked
+              isBookmarked
                 ? "/icons/bookmark.svg"
                 : "/icons/bookmark-outline.svg"
             }
