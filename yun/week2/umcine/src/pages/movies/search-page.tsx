@@ -1,83 +1,97 @@
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
-import { useEffect, useState, type SubmitEvent } from "react";
+import type { SubmitEvent } from "react";
 import { movies } from "../../data/movies";
+import { useBookmarkStore } from "../../stores/bookmark-store";
 
 export function SearchPage() {
-    const { query } = useSearch({ from: "/search" });
-    const navigate = useNavigate({ from: "/search" });
-    const [searchText, setSearchText] = useState(query ?? "");
+  const { query } = useSearch({ from: "/search" });
+  const navigate = useNavigate({ from: "/search" });
 
-    useEffect(() => {
-        setSearchText(query ?? "");
-    }, [query]);
+  const bookmarkedMovieIds = useBookmarkStore(
+    (state) => state.bookmarkedMovieIds,
+  );
 
-    const normalizedQuery = query?.trim().toLowerCase() ?? "";
+  const toggleBookmark = useBookmarkStore((state) => state.toggleBookmark);
 
-    const searchResults = normalizedQuery
-        ? movies.filter(
-            (movie) =>
-                movie.title.toLowerCase().includes(normalizedQuery) ||
-                movie.originalTitle.toLowerCase().includes(normalizedQuery),
-        )
-        : [];
+  const normalizedQuery = query?.trim().toLowerCase() ?? "";
 
-    function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
-        event.preventDefault();
+  const searchResults = normalizedQuery
+    ? movies.filter(
+        (movie) =>
+          movie.title.toLowerCase().includes(normalizedQuery) ||
+          movie.originalTitle.toLowerCase().includes(normalizedQuery),
+      )
+    : [];
 
-        const nextQuery = searchText.trim();
+  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
 
-        navigate({
-            search: nextQuery ? { query: nextQuery } : {},
-        });
-    }
+    const formData = new FormData(event.currentTarget);
+    const nextQuery = String(formData.get("query") ?? "").trim();
 
-    return (
-        <main>
-            <h1>영화 검색</h1>
+    navigate({
+      search: nextQuery ? { query: nextQuery } : {},
+    });
+  }
 
-            <form onSubmit={handleSubmit}>
-                <input
-                    aria-label="검색어"
-                    value={searchText}
-                    onChange={(event) => setSearchText(event.target.value)}
-                />
-                <button type="submit">검색</button>
-            </form>
+  return (
+    <main>
+      <h1>영화 검색</h1>
 
-            {!normalizedQuery ? (
-                <p>검색어를 입력해 주세요.</p>
-            ) : (
-                <>
-                    <h2>‘{query}’ 검색 결과</h2>
-                    <p>영화 {searchResults.length}편</p>
+      <form onSubmit={handleSubmit}>
+        <input
+          key={query ?? ""}
+          name="query"
+          aria-label="검색어"
+          defaultValue={query ?? ""}
+        />
+        <button type="submit">검색</button>
+      </form>
 
-                    {searchResults.length === 0 ? (
-                        <p>검색 결과가 없어요.</p>
-                    ) : (
-                        <ul>
-                            {searchResults.map((movie) => (
-                                <li key={movie.id}>
-                                    <img
-                                        src={movie.posterPath}
-                                        alt={`${movie.title} 포스터`}
-                                    />
-                                    <h3>{movie.title}</h3>
-                                    <p>{movie.originalTitle}</p>
-                                    <p>{movie.releaseDate}</p>
-                                    <p>{movie.overview}</p>
+      {!normalizedQuery ? (
+        <p>검색어를 입력해 주세요.</p>
+      ) : (
+        <>
+          <h2>‘{query}’ 검색 결과</h2>
+          <p>영화 {searchResults.length}편</p>
 
-                                    <Link
-                                        to="/movies/$movieId"
-                                        params={{ movieId: String(movie.id) }}
-                                    >
-                                        상세 보기
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </>
-            )}
-        </main>
-    );
+          {searchResults.length === 0 ? (
+            <p>검색 결과가 없어요.</p>
+          ) : (
+            <ul>
+              {searchResults.map((movie) => {
+                const isBookmarked = bookmarkedMovieIds.includes(movie.id);
+
+                return (
+                  <li key={movie.id}>
+                    <img src={movie.posterPath} alt={`${movie.title} 포스터`} />
+                    <h3>{movie.title}</h3>
+                    <p>{movie.originalTitle}</p>
+                    <p>{movie.releaseDate}</p>
+                    <p>{movie.overview}</p>
+
+                    <button
+                      type="button"
+                      onClick={() => toggleBookmark(movie.id)}
+                    >
+                      {isBookmarked ? "북마크 해제" : "북마크 추가"}
+                    </button>
+
+                    <Link
+                      to="/movies/$movieId"
+                      params={{
+                        movieId: String(movie.id),
+                      }}
+                    >
+                      상세 보기
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </>
+      )}
+    </main>
+  );
 }
