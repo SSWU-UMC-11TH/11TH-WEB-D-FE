@@ -1,7 +1,7 @@
-import * as React from "react";
 import { Outlet, createRootRoute } from "@tanstack/react-router";
 
 import Header from "../components/layout/header";
+import { TmdbAttribution } from "../components/layout/tmdb-attribution";
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -9,10 +9,14 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   return (
-    <React.Fragment>
+    <div className="flex min-h-screen flex-col">
       <Header />
 
-      <Outlet />
-    </React.Fragment>
+      <div className="flex-1">
+        <Outlet />
+      </div>
+
+      <TmdbAttribution />
+    </div>
   );
 }
