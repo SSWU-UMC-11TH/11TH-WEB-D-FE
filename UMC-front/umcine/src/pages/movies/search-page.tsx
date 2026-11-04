@@ -1,16 +1,15 @@
+
 import {
   Link,
   useNavigate,
   useSearch,
 } from "@tanstack/react-router";
 
-import { getTmdbPosterUrl } from "../../utils/movies/tmdb-image";
-
 import { useEffect, useState, type SubmitEvent } from "react";
+import { useQuery } from "@tanstack/react-query";
 
+import { getTmdbPosterUrl } from "../../utils/movies/tmdb-image";
 import { searchMovies } from "../../api/movies/search-movies";
-import type { TmdbMovieListItem } from "../../api/movies/models";
-
 import { BookmarkButton } from "../../components/bookmark-button";
 
 export function SearchPage() {
@@ -22,56 +21,21 @@ export function SearchPage() {
 
   const [searchText, setSearchText] = useState(query ?? "");
 
+  // URL 검색어가 변경되면 입력창에도 반영
   useEffect(() => {
     setSearchText(query ?? "");
   }, [query]);
 
   const normalizedQuery = query?.trim() ?? "";
 
-  const [movies, setMovies] = useState<TmdbMovieListItem[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  // TanStack Query로 영화 검색 API 요청
+  const searchQuery = useQuery({
+    queryKey: ["movies", "search", { query: normalizedQuery }],
+    queryFn: () => searchMovies({ query: normalizedQuery }),
+    enabled: normalizedQuery.length > 0,
+  });
 
-  useEffect(() => {
-    let ignore = false;
-
-    const normalizedQuery = query?.trim() ?? "";
-
-    setMovies([]);
-    setErrorMessage(null);
-
-    if (!normalizedQuery) {
-      setIsLoading(false);
-      return;
-    }
-
-    setIsLoading(true);
-
-    searchMovies({ query: normalizedQuery })
-      .then((response) => {
-        if (!ignore) {
-          setMovies(response.results);
-        }
-      })
-      .catch((error) => {
-        if (!ignore) {
-          setErrorMessage(
-            error instanceof Error
-              ? error.message
-              : "영화 검색에 실패했습니다."
-          );
-        }
-      })
-      .finally(() => {
-        if (!ignore) {
-          setIsLoading(false);
-        }
-      });
-
-    return () => {
-      ignore = true;
-    };
-  }, [query]);
+  const movies = searchQuery.data?.results ?? [];
 
   function handleSubmit(
     event: SubmitEvent<HTMLFormElement>,
@@ -177,88 +141,95 @@ export function SearchPage() {
             </p>
           </div>
 
-          
-      {isLoading ? (
-        <p className="text-gray-500">
-          영화를 검색하고 있어요.
-        </p>
-      ) : errorMessage ? (
-        <p className="text-gray-500">
-          {errorMessage}
-        </p>
-      ) : movies.length === 0 ? (
-        <p className="text-gray-500">
-          검색 결과가 없어요.
-        </p>
-      ) : (
-        <ul className="grid grid-cols-2 gap-x-[40px]">
-          {movies.map((movie) => {
-            const posterUrl = getTmdbPosterUrl(movie.poster_path);
+          {searchQuery.isPending ? (
+            <p className="text-gray-500">
+              영화를 검색하고 있어요.
+            </p>
+          ) : searchQuery.isError ? (
+            <p className="text-gray-500">
+              {searchQuery.error.message}
+            </p>
+          ) : movies.length === 0 ? (
+            <p className="text-gray-500">
+              검색 결과가 없어요.
+            </p>
+          ) : (
+            <ul className="grid grid-cols-2 gap-x-[40px]">
+              {movies.map((movie) => {
+                const posterUrl = getTmdbPosterUrl(
+                  movie.poster_path
+                );
 
-            return (
-              <li key={movie.id}>
-                <article className="flex h-[240px] w-[620px] border-b border-[#e3e6eb] py-[20px]">
-                  <div className="relative h-[190px] w-[126px] shrink-0">
-                    <Link
-                      to="/movies/$movieId"
-                      params={{ movieId: String(movie.id) }}
-                      className="block h-full w-full"
-                    >
-                      {posterUrl ? (
-                        <img
-                          className="h-[190px] w-[126px] rounded-[8px] object-cover"
-                          src={posterUrl}
-                          alt={`${movie.title} 포스터`}
-                        />
-                      ) : (
-                        <div className="flex h-[190px] w-[126px] items-center justify-center rounded-[8px] bg-gray-200 text-xs text-gray-500">
-                          이미지 없음
+                return (
+                  <li key={movie.id}>
+                    <article className="flex h-[240px] w-[620px] border-b border-[#e3e6eb] py-[20px]">
+                      <div className="relative h-[190px] w-[126px] shrink-0">
+                        <Link
+                          to="/movies/$movieId"
+                          params={{
+                            movieId: String(movie.id),
+                          }}
+                          className="block h-full w-full"
+                        >
+                          {posterUrl ? (
+                            <img
+                              className="h-[190px] w-[126px] rounded-[8px] object-cover"
+                              src={posterUrl}
+                              alt={`${movie.title} 포스터`}
+                            />
+                          ) : (
+                            <div className="flex h-[190px] w-[126px] items-center justify-center rounded-[8px] bg-gray-200 text-xs text-gray-500">
+                              이미지 없음
+                            </div>
+                          )}
+                        </Link>
+
+                        <BookmarkButton movieId={movie.id} />
+                      </div>
+
+                      <div className="ml-[20px] flex flex-1 flex-col items-start">
+                        <Link
+                          to="/movies/$movieId"
+                          params={{
+                            movieId: String(movie.id),
+                          }}
+                          className="text-[#17191e] no-underline"
+                        >
+                          <h3 className="m-0 font-[Pretendard,sans-serif] text-[18px] font-bold">
+                            {movie.title}
+                          </h3>
+                        </Link>
+
+                        <div className="mt-[8px] flex items-center gap-[12px]">
+                          <span className="font-[Pretendard,sans-serif] text-[12px] text-[#9ca3af]">
+                            {movie.original_title}
+                          </span>
+
+                          <span className="font-[Pretendard,sans-serif] text-[12px] text-[#9ca3af]">
+                            {movie.release_date}
+                          </span>
                         </div>
-                      )}
-                    </Link>
 
-                    <BookmarkButton movieId={movie.id} />
-                  </div>
+                        <p className="mt-[12px] line-clamp-2 font-[Pretendard,sans-serif] text-[13px] leading-[20px] text-[#606774]">
+                          {movie.overview}
+                        </p>
 
-                  <div className="ml-[20px] flex flex-1 flex-col items-start">
-                    <Link
-                      to="/movies/$movieId"
-                      params={{ movieId: String(movie.id) }}
-                      className="text-[#17191e] no-underline"
-                    >
-                      <h3 className="m-0 font-[Pretendard,sans-serif] text-[18px] font-bold">
-                        {movie.title}
-                      </h3>
-                    </Link>
-
-                    <div className="mt-[8px] flex items-center gap-[12px]">
-                      <span className="font-[Pretendard,sans-serif] text-[12px] text-[#9ca3af]">
-                        {movie.original_title}
-                      </span>
-
-                      <span className="font-[Pretendard,sans-serif] text-[12px] text-[#9ca3af]">
-                        {movie.release_date}
-                      </span>
-                    </div>
-
-                    <p className="mt-[12px] line-clamp-2 font-[Pretendard,sans-serif] text-[13px] leading-[20px] text-[#606774]">
-                      {movie.overview}
-                    </p>
-
-                    <Link
-                      to="/movies/$movieId"
-                      params={{ movieId: String(movie.id) }}
-                      className="mt-[18px] font-[Pretendard,sans-serif] text-[13px] font-semibold text-[#2563eb] no-underline"
-                    >
-                      상세 보기 →
-                    </Link>
-                  </div>
-                </article>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+                        <Link
+                          to="/movies/$movieId"
+                          params={{
+                            movieId: String(movie.id),
+                          }}
+                          className="mt-[18px] font-[Pretendard,sans-serif] text-[13px] font-semibold text-[#2563eb] no-underline"
+                        >
+                          상세 보기 →
+                        </Link>
+                      </div>
+                    </article>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </section>
       )}
     </main>

@@ -33,7 +33,7 @@ export function BookmarkButton({
               : "/icons/bookmark-outline.svg"
           }
           alt=""
-          className="h-[20px] w-[20px] brightness-0 invert"
+          className="h-[42px] w-[20px] brightness-0 invert"
         />
 
         즐겨찾기
