@@ -333,7 +333,7 @@ export function SignupPage() {
         <button
           type="submit"
           disabled={!canSubmit || isSubmitting}
-          className="flex h-12 w-full items-center justify-center rounded-lg bg-[#2563EB] text-[14px] font-extrabold text-white disabled:cursor-not-allowed"
+          className="flex h-12 w-full items-center justify-center rounded-lg bg-[#2563EB] text-[14px] font-extrabold text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isSubmitting ? "가입 중" : "가입하기"}
         </button>
