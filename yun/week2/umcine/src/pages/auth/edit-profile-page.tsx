@@ -1,6 +1,10 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { getProfile, saveProfile } from "./profile-storage";
+import { useUpdateMeMutation } from "@/hooks/use-update-me-mutation";
+import { getMe } from "@/api/members/me";
+import { useAuthStore } from "@/stores/auth-store";
 import "./auth-pages.css";
 
 export function EditProfilePage() {
@@ -8,10 +12,23 @@ export function EditProfilePage() {
 
   const [profile, setProfile] = useState(getProfile);
   const [message, setMessage] = useState("");
+  const updateMeMutation = useUpdateMeMutation();
 
-  const handleChangeAvatar = (
-    e: ChangeEvent<HTMLInputElement>,
-  ) => {
+  const accessToken = useAuthStore((state) => state.accessToken);
+
+  const meQuery = useQuery({
+    queryKey: ["members", "me"],
+    queryFn: getMe,
+    enabled: Boolean(accessToken),
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+  });
+
+  const [nicknameInput, setNicknameInput] = useState<string | null>(null);
+
+  const nickname = nicknameInput ?? meQuery.data?.nickname ?? "";
+
+  const handleChangeAvatar = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (!file) return;
@@ -51,28 +68,35 @@ export function EditProfilePage() {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const nickname = profile.nickname.trim();
+    const trimmedNickname = nickname.trim();
 
-    if (nickname.length < 2 || nickname.length > 12) {
+    if (trimmedNickname.length < 2 || trimmedNickname.length > 12) {
       setMessage("닉네임은 2~12자로 입력해 주세요.");
       return;
     }
 
-    try {
-      saveProfile({
-        ...profile,
-        nickname,
-      });
+    if (!accessToken || !meQuery.data || updateMeMutation.isPending) return;
 
-      navigate({ to: "/my-info" });
-    } catch {
-      setMessage("변경사항 저장에 실패했어요.");
-    }
+    setMessage("");
+
+    updateMeMutation.mutate(
+      { nickname: trimmedNickname },
+      {
+        onSuccess: () => {
+          saveProfile({
+            ...profile,
+            nickname: trimmedNickname,
+            email: meQuery.data.email,
+          });
+
+          navigate({ to: "/my-info" });
+        },
+      },
+    );
   };
 
   return (
     <div className="auth-page">
-
       <main className="auth-main edit-main">
         <form className="edit-form" onSubmit={handleSubmit}>
           <div className="auth-title-row edit-title-row">
@@ -80,27 +104,23 @@ export function EditProfilePage() {
               <h1>내 정보 수정</h1>
               <p>닉네임과 프로필 이미지만 변경할 수 있어요.</p>
             </div>
-
             <button
               type="submit"
               className="auth-primary auth-top-button"
+              disabled={
+                !accessToken || !meQuery.data || updateMeMutation.isPending
+              }
             >
-              변경사항 저장
+              {updateMeMutation.isPending ? "저장 중" : "변경사항 저장"}
             </button>
           </div>
 
           <div className="edit-content">
             <div className="avatar-editor">
-              <label
-                htmlFor="profile-image"
-                className="avatar-upload"
-              >
+              <label htmlFor="profile-image" className="avatar-upload">
                 <span className="profile-avatar edit-avatar">
                   {profile.avatar ? (
-                    <img
-                      src={profile.avatar}
-                      alt="프로필 미리보기"
-                    />
+                    <img src={profile.avatar} alt="프로필 미리보기" />
                   ) : (
                     <span>👤</span>
                   )}
@@ -128,22 +148,16 @@ export function EditProfilePage() {
                 <input
                   id="edit-nickname"
                   type="text"
-                  value={profile.nickname}
+                  value={nickname}
                   maxLength={12}
-                  onChange={(e) =>
-                    setProfile((prev) => ({
-                      ...prev,
-                      nickname: e.target.value,
-                    }))
-                  }
+                  disabled={!accessToken || !meQuery.data}
+                  onChange={(e) => setNicknameInput(e.target.value)}
                 />
 
                 <button
                   type="button"
                   onClick={() =>
-                    setMessage(
-                      "닉네임 중복 확인은 API 연동 후 구현해요.",
-                    )
+                    setMessage("닉네임 중복 확인은 API 연동 후 구현해요.")
                   }
                 >
                   중복 확인
@@ -155,13 +169,11 @@ export function EditProfilePage() {
               <input
                 id="edit-email"
                 type="email"
-                value={profile.email}
+                value={meQuery.data?.email ?? ""}
                 readOnly
               />
 
-              {message && (
-                <p className="auth-notice">{message}</p>
-              )}
+              {message && <p className="auth-notice">{message}</p>}
             </div>
           </div>
 
@@ -170,18 +182,14 @@ export function EditProfilePage() {
               <strong>회원 탈퇴</strong>
 
               <p>
-                탈퇴하면 작성한 평점, 후기와 즐겨찾기가
-                모두 삭제되어 복구할 수 없습니다.
+                탈퇴하면 작성한 평점, 후기와 즐겨찾기가 모두 삭제되어 복구할 수
+                없습니다.
               </p>
             </div>
 
             <button
               type="button"
-              onClick={() =>
-                setMessage(
-                  "회원 탈퇴는 아직 구현되지 않았어요.",
-                )
-              }
+              onClick={() => setMessage("회원 탈퇴는 아직 구현되지 않았어요.")}
             >
               회원 탈퇴
             </button>

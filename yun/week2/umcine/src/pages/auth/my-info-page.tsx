@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { getProfile } from "./profile-storage";
+import { useQuery } from "@tanstack/react-query";
+import { getMe } from "@/api/members/me";
+import { useAuthStore } from "@/stores/auth-store";
 import "./auth-pages.css";
 
 const favoriteMovies = [
@@ -27,17 +30,39 @@ const favoriteMovies = [
 export function MyInfoPage() {
   const [profile] = useState(getProfile);
 
+  const accessToken = useAuthStore((state) => state.accessToken);
+
+  const meQuery = useQuery({
+    queryKey: ["members", "me"],
+    queryFn: getMe,
+    enabled: Boolean(accessToken),
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+  });
+
+  const displayNickname = !accessToken
+    ? "로그인 필요"
+    : meQuery.isLoading
+      ? "불러오는 중..."
+      : meQuery.isError
+        ? "조회 실패"
+        : (meQuery.data?.nickname ?? "-");
+
+  const displayEmail = !accessToken
+    ? "로그인 필요"
+    : meQuery.isLoading
+      ? "불러오는 중..."
+      : meQuery.isError
+        ? "조회 실패"
+        : (meQuery.data?.email ?? "-");
+
   return (
     <div className="auth-page info-page">
-
       <main className="auth-main">
         <div className="auth-title-row">
           <h1>내 정보</h1>
 
-          <Link
-            to="/my-info/edit"
-            className="auth-primary auth-top-button"
-          >
+          <Link to="/my-info/edit" className="auth-primary auth-top-button">
             정보 수정
           </Link>
         </div>
@@ -56,12 +81,12 @@ export function MyInfoPage() {
 
             <div className="profile-detail">
               <span>닉네임</span>
-              <strong>{profile.nickname}</strong>
+              <strong>{displayNickname}</strong>
             </div>
 
             <div className="profile-detail">
               <span>이메일</span>
-              <strong>{profile.email}</strong>
+              <strong>{displayEmail}</strong>
             </div>
           </div>
         </section>
@@ -97,8 +122,7 @@ export function MyInfoPage() {
       </main>
 
       <footer className="auth-footer">
-        This product uses the TMDB API but is not endorsed or
-        certified by TMDB.
+        This product uses the TMDB API but is not endorsed or certified by TMDB.
       </footer>
     </div>
   );

@@ -1,23 +1,30 @@
 import { useState, type FormEvent } from "react";
+import { useLoginMutation } from "@/hooks/use-login-mutation";
 import { Link } from "@tanstack/react-router";
 import "./auth-pages.css";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const loginMutation = useLoginMutation();
+
+  const canSubmit = EMAIL_REGEX.test(email.trim()) && password.length > 0;
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!email.trim() || !password) return;
+    if (!canSubmit || loginMutation.isPending) return;
 
-    setMessage("로그인 API 연동은 8주차에서 진행해요.");
+    loginMutation.mutate({
+      email: email.trim(),
+      password,
+    });
   };
 
   return (
     <div className="auth-page">
-
       <main className="login-main">
         <form className="login-form" onSubmit={handleSubmit}>
           <h1>로그인</h1>
@@ -59,16 +66,14 @@ export function LoginPage() {
           <button
             type="submit"
             className="auth-primary login-submit"
-            disabled={!email.trim() || !password}
+            disabled={!canSubmit || loginMutation.isPending}
           >
-            로그인
+            {loginMutation.isPending ? "로그인 중" : "로그인"}
           </button>
 
           <p className="signup-link">
             처음이신가요? <Link to="/signup">회원가입</Link>
           </p>
-
-          {message && <p className="auth-notice">{message}</p>}
         </form>
       </main>
     </div>

@@ -1,4 +1,4 @@
-import { signup } from "@/api/members/signup";
+import { useSignupMutation } from "@/hooks/use-signup-mutation";
 // import { useNavigate } from "@tanstack/react-router";
 import { checkEmailDuplicate } from "@/api/members/check-email-duplicate";
 import { checkNicknameDuplicate } from "@/api/members/check-nickname-duplicate";
@@ -27,7 +27,7 @@ const DEFAULT_FORM = {
 type FormKey = keyof typeof DEFAULT_FORM;
 
 export function SignupPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const signupMutation = useSignupMutation();
   const [duplicateCheck, setDuplicateCheck] = useState({
     email: { ...DEFAULT_DUPLICATE_CHECK },
     nickname: { ...DEFAULT_DUPLICATE_CHECK },
@@ -113,29 +113,16 @@ export function SignupPage() {
     }
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!canSubmit || isSubmitting) return;
+    if (!canSubmit || signupMutation.isPending) return;
 
-    setIsSubmitting(true);
-
-    try {
-      const response = await signup({
-        email: form.email.trim(),
-        nickname: form.nickname.trim(),
-        password: form.password,
-      });
-
-      alert(response.message);
-
-      // 로그인 페이지 연결 후 사용
-      // navigate({ to: "/login" });
-    } catch {
-      alert("회원가입에 실패했어요. 다시 시도해 주세요.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    signupMutation.mutate({
+      email: form.email.trim(),
+      nickname: form.nickname.trim(),
+      password: form.password,
+    });
   };
 
   return (
@@ -206,8 +193,8 @@ export function SignupPage() {
         )}
       </div>
 
-      <button type="submit" disabled={!canSubmit || isSubmitting}>
-        {isSubmitting ? "가입 중" : "가입하기"}
+      <button type="submit" disabled={!canSubmit || signupMutation.isPending}>
+        {signupMutation.isPending ? "가입 중" : "가입하기"}
       </button>
     </form>
   );
