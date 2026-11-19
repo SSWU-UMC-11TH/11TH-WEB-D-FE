@@ -1,5 +1,9 @@
+// src > pages > auth > login-page.tsx
+
 import { useState, type FormEvent } from "react";
 import { Mail, LockKeyhole } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useLoginMutation } from "../../hooks/use-login-mutation";
 
 // 이메일 형식 검사
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -17,17 +21,41 @@ export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const navigate = useNavigate();
+  const loginMutation = useLoginMutation();
+
   // 이메일과 비밀번호가 입력되었는지 확인
   const canSubmit =
     EMAIL_REGEX.test(email.trim()) && password.length > 0;
 
+  // 로그인 API 요청
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!canSubmit) return;
+    if (!canSubmit || loginMutation.isPending) return;
 
-    // 현재는 퍼블리싱 단계이므로 로그인 API는 연결하지 않음
-    console.log("로그인 폼 입력 확인 완료");
+    loginMutation.mutate(
+      {
+        email: email.trim(),
+        password,
+      },
+      {
+        onSuccess: (response) => {
+          if (!response.isSuccess) {
+            alert(response.message);
+            return;
+          }
+
+          alert(`${response.result.nickname}님, 환영합니다!`);
+          void navigate({ to: "/" });
+        },
+        onError: () => {
+          alert(
+            "로그인에 실패했어요. 이메일과 비밀번호를 확인해 주세요.",
+          );
+        },
+      },
+    );
   };
 
   return (
@@ -95,10 +123,10 @@ export function LoginPage() {
         {/* 로그인 버튼 */}
         <button
           type="submit"
-          disabled={!canSubmit}
+          disabled={!canSubmit || loginMutation.isPending}
           className="flex h-12 w-full items-center justify-center rounded-lg bg-[#2563EB] text-[14px] font-extrabold text-white disabled:cursor-not-allowed disabled:bg-[#A9BFEF]"
         >
-          로그인
+          {loginMutation.isPending ? "로그인 중..." : "로그인"}
         </button>
 
         {/* 회원가입 이동 */}
@@ -107,12 +135,12 @@ export function LoginPage() {
             처음이신가요?
           </span>
 
-          <a
-            href="/signup"
+          <Link
+            to="/signup"
             className="text-[12px] font-extrabold leading-none text-[#2563EB]"
           >
             회원가입
-          </a>
+          </Link>
         </div>
       </form>
     </main>
