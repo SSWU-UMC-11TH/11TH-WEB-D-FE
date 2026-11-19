@@ -1,7 +1,12 @@
 
+ // src/components/layout/header.tsx
+
 import { Link } from "@tanstack/react-router";
+import { useAuthStore } from "../../stores/auth-store";
 
 function Header() {
+  const accessToken = useAuthStore((state) => state.accessToken);
+
   return (
     <header className="flex flex-col gap-3 bg-white px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-0 sm:py-5 sm:pl-16">
       <div className="flex items-center gap-5 sm:gap-10">
@@ -36,7 +41,7 @@ function Header() {
           </Link>
 
           <Link
-            to="/profile"
+            to="/my"
             className="font-[Pretendard,sans-serif] text-[14px] leading-none text-[#17191e] [&.active]:font-bold [&.active]:underline"
           >
             내 정보
@@ -44,7 +49,7 @@ function Header() {
         </nav>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-[10px]">
         <Link
           to="/search"
           className="flex h-[42px] w-[42px] items-center justify-center rounded-lg border border-[#e5e7eb] bg-white p-0"
@@ -57,12 +62,21 @@ function Header() {
           />
         </Link>
 
-        <Link
-          to="/login"
-          className="rounded-[6px] border-0 bg-[#2563eb] px-4 py-2.5 font-semibold text-white"
-        >
-          로그인
-        </Link>
+        {accessToken ? (
+          <Link
+            to="/my"
+            className="flex h-[42px] w-[95px] items-center justify-center rounded-[8px] border border-white bg-[#2563eb] font-[Pretendard,sans-serif] text-[14px] font-extrabold leading-none text-white no-underline"
+          >
+            마이페이지
+          </Link>
+        ) : (
+          <Link
+            to="/login"
+            className="rounded-[6px] border-0 bg-[#2563eb] px-4 py-2.5 font-semibold text-white"
+          >
+            로그인
+          </Link>
+        )}
       </div>
     </header>
   );

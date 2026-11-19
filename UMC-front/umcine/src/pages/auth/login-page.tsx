@@ -1,8 +1,7 @@
-// src > pages > auth > login-page.tsx
 
 import { useState, type FormEvent } from "react";
 import { Mail, LockKeyhole } from "lucide-react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useLoginMutation } from "../../hooks/use-login-mutation";
 
 // 이메일 형식 검사
@@ -21,7 +20,6 @@ export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const navigate = useNavigate();
   const loginMutation = useLoginMutation();
 
   // 이메일과 비밀번호가 입력되었는지 확인
@@ -34,28 +32,10 @@ export function LoginPage() {
 
     if (!canSubmit || loginMutation.isPending) return;
 
-    loginMutation.mutate(
-      {
-        email: email.trim(),
-        password,
-      },
-      {
-        onSuccess: (response) => {
-          if (!response.isSuccess) {
-            alert(response.message);
-            return;
-          }
-
-          alert(`${response.result.nickname}님, 환영합니다!`);
-          void navigate({ to: "/" });
-        },
-        onError: () => {
-          alert(
-            "로그인에 실패했어요. 이메일과 비밀번호를 확인해 주세요.",
-          );
-        },
-      },
-    );
+    loginMutation.mutate({
+      email: email.trim(),
+      password,
+    });
   };
 
   return (
