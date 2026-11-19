@@ -1,3 +1,5 @@
+// src/routes/__root.tsx
+
 import { Outlet, createRootRoute } from "@tanstack/react-router";
 
 import Header from "../components/layout/header";

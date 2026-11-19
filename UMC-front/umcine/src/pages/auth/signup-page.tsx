@@ -1,8 +1,9 @@
 
 import { useState, type FormEvent } from "react";
+
 import { checkEmailDuplicate } from "../../api/members/check-email-duplicate";
 import { checkNicknameDuplicate } from "../../api/members/check-nickname-duplicate";
-import { signup } from "../../api/members/signup";
+import { useSignupMutation } from "../../hooks/use-signup-mutation";
 
 // 이메일 형식 검사
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -47,8 +48,8 @@ export function SignupPage() {
     nickname: { ...DEFAULT_DUPLICATE_CHECK },
   });
 
-  // 회원가입 요청 상태
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  // 회원가입 Mutation
+  const signupMutation = useSignupMutation();
 
   // 입력값 유효성 검사
   const isEmailValid = EMAIL_REGEX.test(form.email.trim());
@@ -156,30 +157,29 @@ export function SignupPage() {
     }
   };
 
-  // 회원가입 API 요청
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  // 회원가입 API 요청 (TanStack Query)
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!canSubmit || isSubmitting) return;
+    if (!canSubmit || signupMutation.isPending) return;
 
-    setIsSubmitting(true);
-
-    try {
-      const response = await signup({
+    signupMutation.mutate(
+      {
         email: form.email.trim(),
         nickname: form.nickname.trim(),
         password: form.password,
-      });
+      },
+      {
+        onSuccess: (response) => {
+          alert(response.message);
 
-      alert(response.message);
-
-      // 로그인 페이지 연결 후 주석 해제
-      // navigate({ to: "/login" });
-    } catch {
-      alert("회원가입에 실패했어요. 다시 시도해 주세요.");
-    } finally {
-      setIsSubmitting(false);
-    }
+          // 로그인 페이지 이동은 다음 단계에서 연결
+        },
+        onError: () => {
+          alert("회원가입에 실패했어요. 다시 시도해 주세요.");
+        },
+      }
+    );
   };
 
   return (
@@ -299,10 +299,7 @@ export function SignupPage() {
 
         {/* 비밀번호 확인 */}
         <div className="flex w-full flex-col gap-2">
-          <label
-            htmlFor="passwordConfirm"
-            className={labelClass}
-          >
+          <label htmlFor="passwordConfirm" className={labelClass}>
             비밀번호 확인
           </label>
 
@@ -313,10 +310,7 @@ export function SignupPage() {
               placeholder="다시 입력"
               value={form.passwordConfirm}
               onChange={(e) =>
-                handleChangeField(
-                  "passwordConfirm",
-                  e.target.value
-                )
+                handleChangeField("passwordConfirm", e.target.value)
               }
               className={inputClass}
             />
@@ -332,10 +326,10 @@ export function SignupPage() {
         {/* 가입하기 버튼 */}
         <button
           type="submit"
-          disabled={!canSubmit || isSubmitting}
+          disabled={!canSubmit || signupMutation.isPending}
           className="flex h-12 w-full items-center justify-center rounded-lg bg-[#2563EB] text-[14px] font-extrabold text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {isSubmitting ? "가입 중" : "가입하기"}
+          {signupMutation.isPending ? "가입 중" : "가입하기"}
         </button>
 
         {/* 로그인 이동 */}
