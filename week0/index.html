@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>나의 첫 웹 페이지</title>
+
+    <style>
+      .card {
+        width: 80%;
+        max-width: 500px;
+        margin: 30px auto;
+        padding: 20px;
+        border: 1px solid gray;
+        border-radius: 10px;
+      }
+
+      h1 {
+        color: navy;
+      }
+
+      p {
+        color: gray;
+      }
+
+      .skills {
+        display: flex;
+        gap: 15px;
+        list-style: none;
+        padding: 0;
+      }
+
+      button {
+        background-color: skyblue;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+      }
+
+      button:hover {
+        background-color: steelblue;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="card">
+      <header>
+        <h1>허은빈</h1>
+        <p>백엔드 개발자를 목표로 공부하고 있습니다.</p>
+      </header>
+
+      <main>
+        <section>
+          <h2>배우고 싶은 기술</h2>
+
+          <ul class="skills">
+            <li>Java</li>
+            <li>Spring Boot</li>
+            <li>MySQL</li>
+          </ul>
+
+          <a href="https://github.com/" target="_blank">GitHub</a>
+          <br /><br />
+
+          <button>클릭하세요</button>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
