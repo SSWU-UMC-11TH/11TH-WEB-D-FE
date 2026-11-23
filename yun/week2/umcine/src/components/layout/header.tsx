@@ -1,45 +1,74 @@
-import { Link } from '@tanstack/react-router'
+import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { getMe } from "@/api/members/me";
+import { useAuthStore } from "@/stores/auth-store";
 
 export function Header() {
-    return (
-        <div className="mx-auto flex h-[91px] w-[1440px] items-center justify-between">
-            <div className="ml-[80px] flex items-center">
-                <div className="flex h-[32px] w-[32px] items-center justify-center rounded-[10px] border-2 border-black">
-                    <img src="/icons/movie-icons/movie.svg" alt="" />
-                </div>
+  const accessToken = useAuthStore((state) => state.accessToken);
 
-                <p className="ml-[10px] text-[20px] font-black tracking-[-0.7px] text-[#17191E]">
-                    UMCine
-                </p>
-
-                <Link
-                    to="/"
-                    className="ml-[42px] border-b-2 border-[#17191E] text-[14px] font-bold text-[#17191E]"
-                >
-                    영화
-                </Link>
-
-                <Link
-                    to="/search"
-                    className="ml-[30px] text-[14px] font-bold text-[#606774]"
-                >
-                    검색
-                </Link>
-
-                <p className="ml-[30px] text-[14px] font-bold text-[#606774]">
-                    내 정보
-                </p>
-            </div>
-
-            <div className="mr-[80px] flex items-center">
-                <div className="flex h-[42px] w-[42px] items-center justify-center rounded-[8px] border border-[#E3E6EB]">
-                    <img src="/icons/movie-icons/search.svg" alt="" />
-                </div>
-
-                <p className="ml-[10px] flex h-[42px] w-[95px] items-center justify-center rounded-[8px] bg-[#2563EB] text-[14px] font-extrabold text-white">
-                    마이페이지
-                </p>
-            </div>
+  const meQuery = useQuery({
+    queryKey: ["members", "me"],
+    queryFn: getMe,
+    enabled: Boolean(accessToken),
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+  });
+  return (
+    <div className="mx-auto flex h-[91px] w-[1440px] items-center justify-between">
+      <div className="ml-[80px] flex items-center">
+        <div className="flex h-[32px] w-[32px] items-center justify-center rounded-[10px] border-2 border-black">
+          <img src="/icons/movie-icons/movie.svg" alt="" />
         </div>
-    )
+
+        <p className="ml-[10px] text-[20px] font-black tracking-[-0.7px] text-[#17191E]">
+          UMCine
+        </p>
+
+        <Link
+          to="/"
+          className="ml-[42px] border-b-2 border-[#17191E] text-[14px] font-bold text-[#17191E]"
+        >
+          영화
+        </Link>
+
+        <Link
+          to="/search"
+          className="ml-[30px] text-[14px] font-bold text-[#606774]"
+        >
+          검색
+        </Link>
+
+        <Link
+          to="/my-info"
+          className="ml-[30px] text-[14px] font-bold text-[#606774]"
+        >
+          내 정보
+        </Link>
+      </div>
+
+      <div className="mr-[80px] flex items-center">
+        <div className="flex h-[42px] w-[42px] items-center justify-center rounded-[8px] border border-[#E3E6EB]">
+          <img src="/icons/movie-icons/search.svg" alt="" />
+        </div>
+
+        {!accessToken ? (
+          <Link
+            to="/login"
+            className="ml-[10px] flex h-[42px] w-[95px] items-center justify-center rounded-[8px] bg-[#2563EB] text-[14px] font-extrabold text-white"
+          >
+            로그인
+          </Link>
+        ) : meQuery.isLoading ? (
+          <div className="ml-[10px] h-[42px] w-[95px] animate-pulse rounded-[8px] bg-gray-200" />
+        ) : (
+          <Link
+            to="/my-info"
+            className="ml-[10px] flex h-[42px] w-[95px] items-center justify-center rounded-[8px] bg-[#2563EB] text-[14px] font-extrabold text-white"
+          >
+            마이페이지
+          </Link>
+        )}
+      </div>
+    </div>
+  );
 }
